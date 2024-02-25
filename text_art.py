@@ -4,8 +4,8 @@ from PIL import Image
 import requests
 
 
-WIDTH = 200
-image_path = 'unnamed.jpg'
+WIDTH = 100
+image_path = 'channels4_profile.jpg'
 file_output_file = 'text_art.txt'
 
 

@@ -1,6 +1,7 @@
 # Text-Art-Generator
 
 ![img](https://github.com/MuChi2112/Text-Art-Generator/blob/main/example_pic/example_pic.png?raw=true)
+
 [picture](https://yt3.googleusercontent.com/roGS60A8a_lDbVakIg1JU3u3hbtjHSTilMGHMizuPKh7tuoY2nl46raxuW2f_83IKFGMjL6Z=s176-c-k-c0x00ffffff-no-rj) from Laplus Darknesss Youtube profile
 
 ## Overview

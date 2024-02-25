@@ -60,4 +60,5 @@ async def on_message(message):
 
             # 將文件發送回Discord
             await message.channel.send(file=discord.File('text_art.txt'))
-client.run('MTIxMTMwMTAzMjIyNzc3NDU3NA.GSzJ29.4bgeun0eBkH3yvAK_m-K_XCCtKiDQwTJ9do718')
+            
+client.run('Your token')

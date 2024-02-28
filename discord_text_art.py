@@ -1,26 +1,23 @@
+from flask import Flask
+from threading import Thread
 import discord
 import numpy as np
 from PIL import Image
 import io
-
 from dotenv import load_dotenv
 import os
 
-# 加載當前目錄下的.env文件
+# 加載環境變量
 load_dotenv()
 
-# 現在你可以像之前一樣從環境變量中獲取DISCORD_TOKEN了
+# Discord Bot 部分
 discord_token = os.getenv('DISCORD_TOKEN')
-
-
-# 定義機器人的意圖
 intents = discord.Intents.default()
-intents.messages = True  # 如果您打算讓機器人讀取訊息
-intents.message_content = True  # 啟用對訊息內容的訪問
+intents.messages = True
+intents.message_content = True
 
 client = discord.Client(intents=intents)
-
-ASCII_CHARS = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]  # ASCII字符集
+ASCII_CHARS = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]
 
 @client.event
 async def on_ready():
@@ -31,46 +28,53 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    # 設定預設寬度為400
-    width = 400
+    width = 400  # 設定預設寬度為400
 
-    # 檢查消息是否包含寬度設定
     if 'width=' in message.content:
         try:
-            width_str = message.content.split('width=')[1].split()[0]  # 獲取寬度數值字符串
-            width = int(width_str)  # 轉換為整數
+            width_str = message.content.split('width=')[1].split()[0]
+            width = int(width_str)
         except (IndexError, ValueError):
             await message.channel.send("無效的寬度值，使用預設值400。")
 
     if message.attachments:
-        attachment = message.attachments[0]  # 假設只處理第一個附件
+        attachment = message.attachments[0]
         if any(attachment.filename.lower().endswith(ext) for ext in ['png', 'jpg', 'jpeg', 'gif']):
             await message.channel.send("圖片已接收，正在處理...")
 
-            # 將圖片保存並打開
             image_bytes = await attachment.read()
-            img = Image.open(io.BytesIO(image_bytes)).convert('L')  # 轉換為灰階
+            img = Image.open(io.BytesIO(image_bytes)).convert('L')
 
-            # 調整圖片大小
             original_width, original_height = img.size
             ratio = original_height / original_width
             new_height = int(width * ratio)
             img = img.resize((width, new_height))
 
-            # 轉換圖片為ASCII
             pixels = np.array(img)
             normalized_pixels = pixels / 255
             ascii_pixels = (normalized_pixels * (len(ASCII_CHARS) - 1)).astype(int)
             ascii_image = [" ".join([ASCII_CHARS[pixel] for pixel in row]) for row in ascii_pixels]
             ascii_image_text = "\n".join(ascii_image)
 
-            # 將ASCII藝術保存到文件
             with open('text_art.txt', 'w') as file:
                 file.write(ascii_image_text)
 
-            # 將文件發送回Discord
             await message.channel.send(file=discord.File('text_art.txt'))
 
+# Flask Web Server 部分
+app = Flask(__name__)
 
-client.run(discord_token)
+@app.route('/')
+def home():
+    return "Hello, I am alive!"
 
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    server = Thread(target=run)
+    server.start()
+
+if __name__ == "__main__":
+    keep_alive()  # 啟動 Flask server
+    client.run(discord_token)  # 啟動 Discord bot

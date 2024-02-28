@@ -17,7 +17,9 @@ intents.messages = True
 intents.message_content = True
 
 client = discord.Client(intents=intents)
-ASCII_CHARS = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]
+# ASCII_CHARS = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]
+
+ASCII_CHARS = ["█", "▓", "@","G","8","L", "*", "+", ";", ":", ",", " "]
 
 @client.event
 async def on_ready():

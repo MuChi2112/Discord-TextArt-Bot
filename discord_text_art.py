@@ -3,6 +3,16 @@ import numpy as np
 from PIL import Image
 import io
 
+from dotenv import load_dotenv
+import os
+
+# 加載當前目錄下的.env文件
+load_dotenv()
+
+# 現在你可以像之前一樣從環境變量中獲取DISCORD_TOKEN了
+discord_token = os.getenv('DISCORD_TOKEN')
+
+
 # 定義機器人的意圖
 intents = discord.Intents.default()
 intents.messages = True  # 如果您打算讓機器人讀取訊息
@@ -60,5 +70,7 @@ async def on_message(message):
 
             # 將文件發送回Discord
             await message.channel.send(file=discord.File('text_art.txt'))
-            
-client.run('Your token')
+
+
+client.run(discord_token)
+

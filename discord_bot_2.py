@@ -7,6 +7,7 @@ from PIL import Image
 import aiohttp  # 引入 aiohttp 庫
 import io
 import os
+import time
 
 intents = discord.Intents.all()
 intents.messages = True
@@ -42,7 +43,7 @@ async def on_message(message):
         # 檢查私人頻道是否已存在
         for channel in guild.channels:
             if channel.name == f'private-{user.name}':
-                await message.channel.send('私人頻道已經存在。')
+                await message.channel.send('Private channel already exists.')
                 return
 
         # 創建身份組和私人頻道
@@ -66,9 +67,9 @@ async def on_message(message):
         if len(parts) == 3 and parts[2].isdigit():
             width = int(parts[2])
             user_widths[message.author.id] = width  # 使用作者的 ID 作為鍵來存儲寬度
-            await message.channel.send(f'寬度已設定為 {width}。')
+            await message.channel.send(f'Width set to {width}。')
         else:
-            await message.channel.send('請輸入有效的寬度值。')
+            await message.channel.send('Enter a valid width value.')
 
     # 處理圖片消息並將其轉換為 ASCII 藝術
     if message.channel.name.startswith('private-') and message.attachments:

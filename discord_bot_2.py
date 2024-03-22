@@ -16,7 +16,7 @@ intents.guilds = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 # ASCII 字符映射
-ASCII_CHARS = ["█", "▓", "@", "G", "8", "L", "*", "+", ";", ":", ",", " "]
+ASCII_CHARS = ["@", "G", "8", "L", "*", "+", ";", ":", ",", " "]
 
 # 使用字典來管理每個用戶的寬度設置
 user_widths = {}
@@ -25,13 +25,15 @@ async def convert_image_to_ascii(image, width):
     image = image.resize((width, int(width * image.height / image.width)))
     image = image.convert('L')
     pixels = image.getdata()
-    ascii_str = ''.join(ASCII_CHARS[pixel//25] for pixel in pixels)
+    scale_factor = 255 / (len(ASCII_CHARS) - 1)  # 计算缩放因子
+    ascii_str = ''.join(ASCII_CHARS[int(pixel // scale_factor)] for pixel in pixels)  # 使用缩放后的像素值
     img_width = image.width
     ascii_str_len = len(ascii_str)
     ascii_img = ""
     for i in range(0, ascii_str_len, img_width):
         ascii_img += ascii_str[i:i+img_width] + '\n'
     return ascii_img
+
 
 @bot.event
 async def on_message(message):

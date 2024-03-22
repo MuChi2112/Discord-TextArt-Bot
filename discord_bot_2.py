@@ -1,0 +1,104 @@
+# 設定用戶寬度上限
+
+from dotenv import load_dotenv
+import discord
+from discord.ext import commands
+import asyncio
+from PIL import Image
+import aiohttp  # 引入 aiohttp 庫
+import io
+import os
+import time
+
+intents = discord.Intents.all()
+intents.messages = True
+intents.guilds = True
+
+bot = commands.Bot(command_prefix='/', intents=intents)
+
+# ASCII 字符映射
+ASCII_CHARS = ["@", "G", "8", "L", "*", "+", ";", ":", ",", " "]
+
+# 使用字典來管理每個用戶的寬度設置
+user_widths = {}
+
+async def convert_image_to_ascii(image, width):
+    image = image.resize((width, int(width * image.height / image.width)))
+    image = image.convert('L')
+    pixels = image.getdata()
+    scale_factor = 255 / (len(ASCII_CHARS) - 1)  # 计算缩放因子
+    ascii_str = ''.join(ASCII_CHARS[int(pixel // scale_factor)] for pixel in pixels)  # 使用缩放后的像素值
+    img_width = image.width
+    ascii_str_len = len(ascii_str)
+    ascii_img = ""
+    for i in range(0, ascii_str_len, img_width):
+        ascii_img += ascii_str[i:i+img_width] + '\n'
+    return ascii_img
+
+
+@bot.event
+async def on_message(message):
+    if message.content.startswith('start-textart'):
+        guild = message.guild
+        user = message.author
+        await message.delete()
+
+        # 檢查私人頻道是否已存在
+        for channel in guild.channels:
+            if channel.name == f'private-{user.name}':
+                await user.send('私人頻道已經存在。')
+                return
+
+        # 創建身份組和私人頻道
+        role = await guild.create_role(name=user.name)
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            guild.me: discord.PermissionOverwrite(read_messages=True),
+            role: discord.PermissionOverwrite(read_messages=True)
+        }
+        private_channel = await guild.create_text_channel(f'private-{user.name}', overwrites=overwrites)
+        await user.add_roles(role)
+
+        # 設置 15 分鐘後關閉頻道的定時器
+        await asyncio.sleep(900)  # 15 分鐘
+        await private_channel.delete()
+        await role.delete()
+
+    elif message.content.startswith('set width'):
+        # 設置自定義寬度
+        parts = message.content.split()
+        if len(parts) == 3 and parts[2].isdigit():
+            width = int(parts[2])
+            user_widths[message.author.id] = width  # 使用作者的 ID 作為鍵來存儲寬度
+            await message.channel.send(f'寬度已設定為 {width}。')
+        else:
+            await message.channel.send('請輸入有效的寬度值。')
+
+    # 處理圖片消息並將其轉換為 ASCII 藝術
+    if message.channel.name.startswith('private-') and message.attachments:
+        for attachment in message.attachments:
+            if any(attachment.filename.lower().endswith(ext) for ext in ['png', 'jpg', 'jpeg', 'gif']):
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(attachment.url) as resp:
+                        if resp.status == 200:
+                            data = io.BytesIO(await resp.read())
+                            image = Image.open(data)
+                            # 檢查用戶是否設置了自定義寬度
+                            width = user_widths.get(message.author.id, 100)  # 使用預設值100如果沒有設置
+                            ascii_art = await convert_image_to_ascii(image, width)
+                            # 生成唯一的檔案名
+                            filename = f"text_art_{message.author.id}_{int(time.time())}.txt"
+                            with open(filename, "w") as file:
+                                file.write(ascii_art)
+                            await message.channel.send(file=discord.File(filename))
+                            os.remove(filename)  # 刪除檔案以避免佔用空間
+
+    await bot.process_commands(message)
+
+# 你的其他事件和命令...
+
+# 使用環境變量是一種更安全的方法來處理您的 Token。
+
+load_dotenv()  # 加載 .env 文件中的環境變量
+discord_token = os.getenv('DISCORD_TOKEN')  # 從 .env 文件中獲取 Discord Token
+bot.run(discord_token)  # 使用從環境變量獲取的 Token 運行 Discord 機器人

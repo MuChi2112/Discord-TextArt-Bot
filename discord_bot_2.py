@@ -47,7 +47,7 @@ async def on_message(message):
         # 檢查私人頻道是否已存在
         for channel in guild.channels:
             if channel.name == f'private-{user.name}':
-                await message.channel.send('Private channel already exists.')
+                await user.send('Private channel already exists.')
                 return
 
         # 創建身份組和私人頻道

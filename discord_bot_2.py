@@ -38,10 +38,11 @@ async def convert_image_to_ascii(image, width):
 
 @bot.event
 async def on_message(message):
-    if message.content.startswith('/start-textart'):
+    if message.content.startswith('start-textart'):
         print("接收到start-textart")
         guild = message.guild
         user = message.author
+        await message.delete()
 
         # 檢查私人頻道是否已存在
         for channel in guild.channels:
@@ -64,7 +65,7 @@ async def on_message(message):
         await private_channel.delete()
         await role.delete()
 
-    elif message.content.startswith('/set width'):
+    elif message.content.startswith('set width'):
         # 設置自定義寬度
         parts = message.content.split()
         if len(parts) == 3 and parts[2].isdigit():
@@ -113,9 +114,13 @@ def keep_alive():
     server = Thread(target=run)
     server.start()
 
-if __name__ == "__main__":
-    keep_alive()  # 啟動 Flask server
+# 主异步入口函数
 
-load_dotenv()  # 加載 .env 文件中的環境變量
-discord_token = os.getenv('DISCORD_TOKEN')  # 從 .env 文件中獲取 Discord Token
-bot.run(discord_token)  # 使用從環境變量獲取的 Token 運行 Discord 機器人
+    
+
+if __name__ == "__main__":
+    load_dotenv()  # 加载环境变量
+    discord_token = os.getenv('DISCORD_TOKEN')  # 获取Discord Token
+
+    keep_alive()  # 启动 Flask web服务器
+    bot.run(discord_token)  # 使用Discord Token启动bot

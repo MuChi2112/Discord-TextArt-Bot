@@ -1,42 +1,97 @@
-# Text-Art-Generator
+# Discord TextArt Bot
 
-Join the [Discord server](https://discord.gg/VtARBeSn) to use it for free
+This is a bot that runs on [Discord](https://discord.gg/FNH7CVEJ)(Click here to join the server!!!), designed to transform picture into text art-style .txt files.
+
 
 ![img](https://github.com/MuChi2112/Text-Art-Generator/blob/main/example_pic/example_pic.png?raw=true)
-
 [picture](https://yt3.googleusercontent.com/roGS60A8a_lDbVakIg1JU3u3hbtjHSTilMGHMizuPKh7tuoY2nl46raxuW2f_83IKFGMjL6Z=s176-c-k-c0x00ffffff-no-rj) from Laplus Darknesss Youtube profile
 
-## Overview
-This script is designed to automate the process of downloading multiple `.ts` (Transport Stream) files from a specified base URL, merging them into a single file, and converting the result into an MP4 format. It is particularly useful for handling video streams segmented into multiple `.ts` files, a common practice in video streaming technologies.
+This project is hosted on [render](https://dashboard.render.com/), and uses [uptimerobot](https://uptimerobot.com/) to prevent the bot from sleeping.
 
-## Prerequisites
-Before running this script, ensure you have the following installed:
-- Python 3.x
-- `requests` library for Python (for downloading files)
-- `ffmpeg` (for merging and converting files)
+## Features
 
-You can install the `requests` library using pip if you haven't already:
-```bash
-pip install requests
+- **Discord Bot**: Listens for images sent in messages and converts them to ASCII art.
+- **Flask Web Server**: Provides a basic web interface indicating the bot's operational status.
+
+
+## Dependencies
+
+```
+aiohttp==3.9.3
+aiosignal==1.3.1
+attrs==23.1.0
+blinker==1.7.0
+certifi==2023.7.22
+cffi==1.16.0
+charset-normalizer==3.3.2
+click==8.1.7
+colorama==0.4.6
+discord.py==2.3.2
+Flask==3.0.2
+frozenlist==1.4.1
+h11==0.14.0
+idna==3.4
+itsdangerous==2.1.2
+Jinja2==3.1.3
+MarkupSafe==2.1.5
+multidict==6.0.5
+numpy==1.26.4
+outcome==1.3.0.post0
+packaging==23.2
+pillow==10.2.0
+pycparser==2.21
+PySocks==1.7.1
+python-dotenv==1.0.0
+requests==2.31.0
+selenium==4.15.2
+sniffio==1.3.0
+sortedcontainers==2.4.0
+trio==0.23.1
+trio-websocket==0.11.1
+urllib3==2.0.7
+webdriver-manager==4.0.1
+Werkzeug==3.0.1
+wsproto==1.2.0
+yarl==1.9.4
 ```
 
-Ensure `ffmpeg` is installed and accessible from your system's PATH. You can download it from [FFmpeg's official website](https://ffmpeg.org/download.html).
+Please ensure all dependencies are installed to avoid any compatibility issues. You can install these packages using the following command:
 
-## How to Use
-1. **Configuration**: Before running the script, you need to set up a few variables:
-   - `save_path`: The directory where the `.ts` files will be downloaded and processed. This script will create the directory if it doesn't exist.
-   - `start_file` and `end_file`: The range of file indexes to download. The script will download files starting from `start_file` to `end_file`, inclusive.
-   - `base_url_front` and `base_url_end`: Parts of the URL that will be concatenated with the file index to form the full URL for downloading. The full URL is constructed as `base_url_front + str(i) + base_url_end` where `i` is the file index.
-   - `video_name`: The desired name for the final MP4 video file.
+```bash
+pip install -r requirements.txt
+```
 
-2. **Running the Script**: With Python installed, run the script in a terminal or command prompt. Ensure you are in the directory containing the script or provide the full path to the script.
 
-3. **Post-Execution**: After the script completes execution, the specified `save_path` directory will contain the final MP4 video file. All intermediary `.ts` files and the `filelist.txt` used for merging will be deleted to clean up the workspace.
+---
 
-## Notes
-- The script includes error handling for HTTP requests, so it will notify you if any file fails to download due to network issues or incorrect URLs.
-- The script uses `ffmpeg` with the `concat` protocol, which is a straightforward and efficient way to merge `.ts` files without re-encoding, preserving the original quality.
-- This script assumes that all `.ts` files are named sequentially and can be sorted numerically to be merged in the correct order.
+## Setup
 
-## Disclaimer
-This script is provided as-is for educational purposes. Ensure you have the right to download and convert any content you use with this script. Respect copyright laws and the terms of service for any content you access.
+### Environment Variables
+
+Create a `.env` file in the root directory of the project and add your Discord bot token:
+
+```plaintext
+DISCORD_TOKEN=your_discord_bot_token_here
+```
+
+
+### Running the Bot
+
+To start the bot and the Flask server, run:
+
+```bash
+python discord_bot_2.py
+```
+
+## Usage
+
+1. **Starting the Bot**: Execute the script. The Flask server will start, and the bot will log in to Discord.
+2. **Sending Images**: In any Discord server where the bot is present, upload an image with or without the `set width 200` command (e.g., `set width 200`). Feel free to replace the number behind it. The bot will reply with the ASCII art representation of the image.
+
+
+## Contributions
+
+Contributions are welcome! Feel free to fork the project and submit a pull request with your improvements.
+
+
+
